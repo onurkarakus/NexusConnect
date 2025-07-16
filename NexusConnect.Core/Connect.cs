@@ -5,12 +5,11 @@ namespace NexusConnect.Core;
 
 public static class Connect
 {
-    public static IAuthenticationStage To<TProvider>() where TProvider : IProvider, new()
+    public static IAuthenticationStage To<TProvider>() where TProvider : IProvider
     {
-        // 1. Belirtilen tipte bir uzman (strategy) oluştur.
-        var provider = new TProvider();
+        var factory = NexusConnector.GetProviderFactory(typeof(TProvider));
+        var provider = factory();
 
-        // 2. Bu uzmanı General'e (Orchestrator) vererek onu yarat.
         return new FluentOrchestrator(provider);
     }
 
@@ -26,15 +25,25 @@ public static class Connect
 
         public IActionStage WithToken(string token)
         {
-            // İşi kendi yapmak yerine uzmana devrediyor!
             _provider.Authenticate(token);
+
             return this;
         }
 
         public void Post(string message)
         {
-            // İşi kendi yapmak yerine uzmana devrediyor!
             _provider.Post(message);
+        }
+
+        public TProviderActions As<TProviderActions>() where TProviderActions: class
+        {
+            if (_provider is TProviderActions providerActions)
+            {
+                return providerActions;
+            }
+
+            throw new InvalidCastException($"Mevcut provider ('{_provider.GetType().Name}'), istenen eylem setini ('{typeof(TProviderActions).Name}') desteklemiyor.");
+
         }
     }
 }

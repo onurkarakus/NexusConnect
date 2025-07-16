@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NexusConnect.Core.Providers.GitHub;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NexusConnect.Core.Providers;
 
-public class GitHubProvider : IProvider
+public class GitHubProvider : IProvider, IGitHubActions
 {
     public string Name => "GitHub";
 
@@ -28,5 +29,15 @@ public class GitHubProvider : IProvider
 
         // Gerçek bir uygulamada bu metot GitHub API'sine bir HTTP isteği yapar.
         Console.WriteLine($"---> GitHub Provider: Issue/Comment gönderiliyor -> '{message}'");
+    }
+
+    public void CreateIssue(string title, string body)
+    {
+        if (string.IsNullOrEmpty(_token))
+        {
+            throw new InvalidOperationException("Authentication required.");
+        }
+
+        Console.WriteLine($"---> GitHub Provider: Issue oluşturuluyor. Title: '{title}', Body: '{body}'");
     }
 }
