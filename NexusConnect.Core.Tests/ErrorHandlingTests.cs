@@ -10,7 +10,7 @@ public class ErrorHandlingTests
     {
         NexusConnector.Configure(config =>
         {
-            config.RegisterProvider<GitHubProvider>(() => new GitHubProvider());
+            config.RegisterProvider<GitHubProvider>(() => new GitHubProvider("onurkarakus", "BankingMicroServiceSample"));
         });
     }
 
@@ -18,7 +18,7 @@ public class ErrorHandlingTests
     public async Task GitHub_WithInvalidToken_ShouldThrowAuthorizationException()
     {
         // Arrange
-        var invalidToken = "bu-kesinlikle-gecersiz-bir-token";
+        var invalidToken = "invalid-token";
 
         // Act & Assert
         await Assert.ThrowsAsync<NexusApiAuthorizationException>(async () =>

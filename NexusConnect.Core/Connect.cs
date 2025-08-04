@@ -20,7 +20,7 @@ public static class Connect
         public FluentOrchestrator(IProvider provider)
         {
             _provider = provider;
-            Console.WriteLine($"Orchestrator, '{_provider.Name}' provider'ı ile çalışmaya hazırlandı.");
+            Console.WriteLine($"Orchestrator prepare to work with '{_provider.Name}' provider.");
         }
 
         public IActionStage WithToken(string token)

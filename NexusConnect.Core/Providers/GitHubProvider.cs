@@ -56,14 +56,14 @@ public class GitHubProvider : IProvider, IGitHubActions
         var contentStream = await response.Content.ReadAsStreamAsync();
         var createdIssue = await JsonSerializer.DeserializeAsync<Issue>(contentStream);
 
-        return createdIssue ?? throw new NexusApiException("GitHub bir issue oluşturdu ancak cevap gövdesi boş veya geçersiz.");
+        return createdIssue ?? throw new NexusApiException("GitHub created an issue but the response body was empty or invalid.");
     }
 
     public async Task<Issue> GetIssueByNumber(int issueNumber)
     {
         if (issueNumber <= 0)
         {
-            throw new ArgumentException("Issue numarası pozitif bir değer olmalıdır.", nameof(issueNumber));
+            throw new ArgumentException("Issue number must be a positive value.", nameof(issueNumber));
         }
 
         var response = await SendRequestAsync(HttpMethod.Get, $"issues/{issueNumber}");
@@ -71,7 +71,7 @@ public class GitHubProvider : IProvider, IGitHubActions
         var contentStream = await response.Content.ReadAsStreamAsync();
         var issue = await JsonSerializer.DeserializeAsync<Issue>(contentStream);
 
-        return issue ?? throw new NexusApiException("API'den gelen issue verisi deserialize edilemedi veya boş.");
+        return issue ?? throw new NexusApiException("The issue data from the API could not be deserialized or was empty.");
     }
 
     private async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, string endpoint, HttpContent? content = null)
@@ -99,9 +99,9 @@ public class GitHubProvider : IProvider, IGitHubActions
 
         throw response.StatusCode switch
         {
-            System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden => new NexusApiAuthorizationException("GitHub API isteği yetkilendirme sorunu nedeniyle başarısız oldu."),
-            System.Net.HttpStatusCode.NotFound => new NexusApiNotFoundException($"İstenen GitHub kaynağı bulunamadı. URI: {requestUri}"),
-            _ => new NexusApiException($"GitHub API'sinde beklenmedik bir hata oluştu. Durum Kodu: {response.StatusCode}", new HttpRequestException())
+            System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden => new NexusApiAuthorizationException("GitHub API request failed due to an authorization issue. Please check your token and its permissions."),
+            System.Net.HttpStatusCode.NotFound => new NexusApiNotFoundException($"The requested GitHub resource was not found. Please check the repository owner and name. URI: {request.RequestUri}"),
+            _ => new NexusApiException($"An unexpected error occurred with the GitHub API. Status Code: {response.StatusCode}", new HttpRequestException())
         };
     }
 
@@ -109,7 +109,7 @@ public class GitHubProvider : IProvider, IGitHubActions
     {
         if (issueNumber <= 0)
         {
-            throw new ArgumentException("Issue numarası pozitif bir değer olmalıdır.", nameof(issueNumber));
+            throw new ArgumentException("Issue number must be a positive value.", nameof(issueNumber));
         }
 
         var payload = new Dictionary<string, object>();
@@ -119,7 +119,7 @@ public class GitHubProvider : IProvider, IGitHubActions
 
         if (!payload.Any())
         {
-            throw new ArgumentException("Güncellemek için en az bir alan belirtilmelidir.");
+            throw new ArgumentException("At least one field must be specified for an update.");
         }
 
         var jsonContent = JsonSerializer.Serialize(payload);
@@ -130,6 +130,6 @@ public class GitHubProvider : IProvider, IGitHubActions
         var contentStream = await response.Content.ReadAsStreamAsync();
         var updatedIssue = await JsonSerializer.DeserializeAsync<Issue>(contentStream);
 
-        return updatedIssue ?? throw new NexusApiException("GitHub issue'yu güncelledi ancak cevap gövdesi boş veya geçersiz.");
+        return updatedIssue ?? throw new NexusApiException("GitHub updated the issue but the response body was empty or invalid.");
     }
 }
