@@ -2,24 +2,31 @@
 using NexusConnect.Core.Providers.GitHub;
 using NexusConnect.Core.Providers.GitHub.Enums;
 using NexusConnect.Core.Providers.GitHub.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NexusConnect.Core.Providers;
 
+/// <summary>
+/// Provides methods to interact with GitHub issues for a specific repository.
+/// Supports authentication, issue creation, retrieval, and updates using the GitHub REST API.
+/// </summary>
 public class GitHubProvider : IProvider, IGitHubActions
 {
     private static readonly HttpClient httpClient = new HttpClient();
     private readonly string _owner;
     private readonly string _repo;
+    
     public string Name => "GitHub";
     private string? _token;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="GitHubProvider"/> for the specified repository owner and name.
+    /// </summary>
+    /// <param name="owner">The GitHub repository owner.</param>
+    /// <param name="repo">The GitHub repository name.</param>
+    /// <exception cref="ArgumentNullException">Thrown if owner or repo is null or whitespace.</exception>
     public GitHubProvider(string owner, string repo)
     {
         if (string.IsNullOrWhiteSpace(owner)) throw new ArgumentNullException(nameof(owner));
@@ -29,11 +36,20 @@ public class GitHubProvider : IProvider, IGitHubActions
         _repo = repo;
     }
 
+    /// <summary>
+    /// Authenticates the provider with a GitHub token.
+    /// </summary>
+    /// <param name="token">The GitHub personal access token.</param>
     public void Authenticate(string token)
     {
         _token = token;
-    }    
+    }
 
+    /// <summary>
+    /// Retrieves issues from the repository filtered by state.
+    /// </summary>
+    /// <param name="state">The state of issues to retrieve (Open, Closed, All).</param>
+    /// <returns>A collection of <see cref="Issue"/> objects.</returns>
     public async Task<IEnumerable<Issue>> GetIssues(IssueState state = IssueState.Open)
     {
         var stateString = state.ToString().ToLower();
@@ -45,6 +61,13 @@ public class GitHubProvider : IProvider, IGitHubActions
         return issues ?? [];
     }
 
+    /// <summary>
+    /// Creates a new issue in the repository.
+    /// </summary>
+    /// <param name="title">The title of the issue.</param>
+    /// <param name="body">The body/description of the issue.</param>
+    /// <returns>The created <see cref="Issue"/>.</returns>
+    /// <exception cref="NexusApiException">Thrown if the response body is empty or invalid.</exception>
     public async Task<Issue> CreateIssue(string title, string body)
     {
         var issueRequest = new { title, body };
@@ -59,6 +82,13 @@ public class GitHubProvider : IProvider, IGitHubActions
         return createdIssue ?? throw new NexusApiException("GitHub created an issue but the response body was empty or invalid.");
     }
 
+    /// <summary>
+    /// Retrieves a single issue by its number.
+    /// </summary>
+    /// <param name="issueNumber">The issue number.</param>
+    /// <returns>The <see cref="Issue"/> with the specified number.</returns>
+    /// <exception cref="ArgumentException">Thrown if issueNumber is not positive.</exception>
+    /// <exception cref="NexusApiException">Thrown if the issue data cannot be deserialized.</exception>
     public async Task<Issue> GetIssueByNumber(int issueNumber)
     {
         if (issueNumber <= 0)
@@ -74,6 +104,18 @@ public class GitHubProvider : IProvider, IGitHubActions
         return issue ?? throw new NexusApiException("The issue data from the API could not be deserialized or was empty.");
     }
 
+    /// <summary>
+    /// Sends an HTTP request to the GitHub API for the configured repository.
+    /// Handles authentication and error mapping.
+    /// </summary>
+    /// <param name="method">The HTTP method.</param>
+    /// <param name="endpoint">The API endpoint relative to the repository.</param>
+    /// <param name="content">Optional HTTP content for the request.</param>
+    /// <returns>The <see cref="HttpResponseMessage"/> from the API.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if authentication is missing.</exception>
+    /// <exception cref="NexusApiAuthorizationException">Thrown for authorization errors.</exception>
+    /// <exception cref="NexusApiNotFoundException">Thrown if the resource is not found.</exception>
+    /// <exception cref="NexusApiException">Thrown for other API errors.</exception>
     private async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, string endpoint, HttpContent? content = null)
     {
         if (string.IsNullOrEmpty(_token))
@@ -105,6 +147,16 @@ public class GitHubProvider : IProvider, IGitHubActions
         };
     }
 
+    /// <summary>
+    /// Updates an existing issue in the repository.
+    /// </summary>
+    /// <param name="issueNumber">The issue number to update.</param>
+    /// <param name="title">Optional new title.</param>
+    /// <param name="body">Optional new body/description.</param>
+    /// <param name="state">Optional new state (Open, Closed).</param>
+    /// <returns>The updated <see cref="Issue"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown if issueNumber is not positive or no fields are specified.</exception>
+    /// <exception cref="NexusApiException">Thrown if the response body is empty or invalid.</exception>
     public async Task<Issue> UpdateIssue(int issueNumber, string? title = null, string? body = null, IssueState? state = null)
     {
         if (issueNumber <= 0)
