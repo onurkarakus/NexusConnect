@@ -26,4 +26,4 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --no-build --verbosity normal
