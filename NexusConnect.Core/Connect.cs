@@ -30,11 +30,6 @@ public static class Connect
             return this;
         }
 
-        public void Post(string message)
-        {
-            _provider.Post(message);
-        }
-
         public TProviderActions As<TProviderActions>() where TProviderActions: class
         {
             if (_provider is TProviderActions providerActions)
