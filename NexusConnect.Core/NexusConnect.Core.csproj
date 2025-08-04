@@ -4,6 +4,20 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>NexusConnect</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Onur Karakus</Authors>
+    <Company>Onur Karakus</Company>
+    <Description>A fluent API orchestrator for .NET to manage multiple service APIs (like GitHub, Twitter, etc.) under a single, intuitive syntax.</Description>
+    <Copyright>Copyright (c) Onur Karakus 2025</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/onurkarakus/NexusConnect</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/onurkarakus/NexusConnect</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>api, orchestrator, fluent, wrapper, github, twitter, automation, sdk, .net</PackageTags>
+    <PackageReleaseNotes>Initial alpha release of the core framework and the fully-featured GitHub provider.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
