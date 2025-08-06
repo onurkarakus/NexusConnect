@@ -19,6 +19,19 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: SonarCloud Scan Begin
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          /k:"onurkarakus_NexusConnect"
+          /o:"onurkarakus"
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.host.url="https://sonarcloud.io"
+          /d:sonar.cs.cobertura.reportsPaths=**/coverage.cobertura.xml
+
     - name: Restore dependencies
       run: dotnet restore
 
