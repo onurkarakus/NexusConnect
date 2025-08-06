@@ -1,4 +1,4 @@
-name: NexusConnect CI
+name: Build and Test
 
 on:
   push:
@@ -25,7 +25,26 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
+    # --- DEÐÝÞEN ADIM ---
+    - name: Run tests with code coverage
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --verbosity normal
+      run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+    # --- YENÝ ADIM 1: KAPSAM KONTROLÜ (KALÝTE KAPISI) ---
+    - name: Code Coverage Summary
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        # Coverlet'in oluþturduðu kapsama raporu dosyasýný bulur
+        filename: '**/coverage.cobertura.xml'
+        # Minimum eþiðin altýndaysa iþ akýþýný baþarýsýz yap
+        fail_below_min: true
+        # Eþikleri belirle: satýr için %80, branch için %70 (branch'i þimdilik yoksayabiliriz)
+        thresholds: '80 70'
+
+    # --- YENÝ ADIM 2: KAPSAM RAPORUNU YÜKLEME (ARTIFACT) ---
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-report
+        path: '**/coverage.cobertura.xml'
