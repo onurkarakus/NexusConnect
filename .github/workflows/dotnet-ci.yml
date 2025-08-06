@@ -28,12 +28,8 @@ jobs:
     - name: Run tests with code coverage
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./coverage/
-
-    - name: List files in the repository
-      run: |
-        ls -R
-
+      run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --settings coverlet.runsettings --verbosity normal
+        
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
