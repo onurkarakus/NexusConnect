@@ -26,4 +26,6 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
       run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --verbosity normal

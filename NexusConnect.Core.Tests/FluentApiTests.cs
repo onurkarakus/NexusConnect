@@ -12,12 +12,22 @@ public class FluentApiTests
 
     public FluentApiTests()
     {
-        var config = new ConfigurationBuilder()
-            .AddUserSecrets<FluentApiTests>()
-            .Build();
+        _githubToken = Environment.GetEnvironmentVariable("GH_PAT");
 
-        _githubToken = config["GitHub:Token"] ?? throw new InvalidOperationException("GitHub token not found in User Secrets.");
+        if (string.IsNullOrEmpty(_githubToken))
+        {
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddUserSecrets<FluentApiTests>()
+                .Build();
 
+            _githubToken = configurationBuilder["GitHub:Token"];
+        }
+
+        if (string.IsNullOrEmpty(_githubToken))
+        {
+            throw new InvalidOperationException("GitHub token could not be found in environment variables (GH_PAT) or User Secrets (GitHub:Token).");
+        }
+        
         NexusConnector.Configure(cfg =>
         {
             cfg.RegisterProvider<GitHubProvider>(() => new GitHubProvider("onurkarakus", "BankingMicroServiceSample"));
