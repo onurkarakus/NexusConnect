@@ -26,8 +26,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
-          -Dsonar.projectKey=KENDÝ_PROJE_KEY'ÝN
-          -Dsonar.organization=KENDÝ_ORGANÝZASYON_KEY'ÝN
+          -Dsonar.projectKey=onurkarakus_NexusConnect
+          -Dsonar.organization=onurkarakus
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.cs.cobertura.reportsPaths=**/coverage.cobertura.xml
 
