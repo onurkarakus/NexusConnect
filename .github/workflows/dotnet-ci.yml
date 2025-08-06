@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -44,8 +45,7 @@ jobs:
 
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        # --- DEÐÝÞÝKLÝK BURADA: Arama yolunu tüm alt klasörleri içerecek þekilde güncelliyoruz ---
+      with:        
         filename: '**/coverage.cobertura.xml'
         fail_below_min: true
         thresholds: '80 70'
@@ -53,6 +53,25 @@ jobs:
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
-        name: code-coverage-report
-        # --- DEÐÝÞÝKLÝK BURADA: Yüklenecek dosyanýn yolunu da güncelliyoruz ---
+        name: code-coverage-report        
         path: '**/coverage.cobertura.xml'
+    
+  publish:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Create NuGet Package
+        run: dotnet pack NexusConnect.Core/NexusConnect.Core.csproj --configuration Release
+
+      - name: Push to NuGet
+        run: dotnet nuget push "NexusConnect.Core/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json"
