@@ -1,7 +1,7 @@
 # NexusConnect: The Fluent API Orchestrator
 
-[![NuGet version](https://img_shields_io/nuget/v/NexusConnect.svg)](https://www.nuget.org/packages/NexusConnect/)
-[![License: MIT](https://img_shields_io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NuGet version](https://img.shields.io/nuget/v/NexusConnect.svg)](https://www.nuget.org/packages/NexusConnect/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 NexusConnect is a .NET orchestration library that unifies multiple service APIs (like GitHub, Twitter, etc.) under a single, fluent, and intuitive syntax. It is designed to maximize the developer experience (DX).
 
