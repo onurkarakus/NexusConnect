@@ -12,4 +12,6 @@ public interface IAuthenticationStage
     /// <param name="token">The authentication token.</param>
     /// <returns>An instance of <see cref="IActionStage"/> representing the next stage.</returns>
     IActionStage WithToken(string token);
+
+    IActionStage WithDefaultToken();
 }

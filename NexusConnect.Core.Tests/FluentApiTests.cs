@@ -122,4 +122,27 @@ public class FluentApiTests
         Assert.Equal(newTitle, updatedIssue.Title); 
         Assert.Equal("closed", updatedIssue.State); 
     }
+
+    [Fact]
+    public async Task Connect_WithDefaultToken_ShouldSucceed()
+    {
+        // ARRANGE
+        // Testin başında, varsayılan token olarak geçerli token'ımızı ayarlıyoruz.
+        NexusConnector.SetDefaultToken(_githubToken);
+
+        // ACT
+        var exception = await Record.ExceptionAsync(async () =>
+        {
+            // Artık .WithDefaultToken() kullanıyoruz
+            var issues = await Connect.To<GitHubProvider>()
+                .WithDefaultToken()
+                .As<IGitHubActions>()
+                .GetIssues();
+
+            Assert.NotNull(issues);
+        });
+
+        // ASSERT
+        Assert.Null(exception);
+    }
 }

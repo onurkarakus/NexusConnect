@@ -1,7 +1,7 @@
 # NexusConnect: The Fluent API Orchestrator
 
-[![NuGet version](https://img.shields.io/nuget/v/NexusConnect.svg)](https://www.nuget.org/packages/NexusConnect/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NuGet version](https://img_shields_io/nuget/v/NexusConnect.svg)](https://www.nuget.org/packages/NexusConnect/)
+[![License: MIT](https://img_shields_io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 NexusConnect is a .NET orchestration library that unifies multiple service APIs (like GitHub, Twitter, etc.) under a single, fluent, and intuitive syntax. It is designed to maximize the developer experience (DX).
 
@@ -14,7 +14,7 @@ Developing a modern application often requires integration with dozens of third-
 -   Inconsistency across the codebase.
 -   Dozens of lines of boilerplate code for even simple operations.
 
-NexusConnect solves these problems by abstracting all these different APIs behind a single, consistent, and fluent interface.
+NexusConnect solves these problems by abstractacting all these different APIs behind a single, consistent, and fluent interface.
 
 ## Core Usage (Quick Start)
 
@@ -50,17 +50,16 @@ using NexusConnect.Core.Providers;
 
 public static void Main(string[] args)
 {
+    // Register your providers
     NexusConnector.Configure(config =>
     {
-        // Registering how to create the GitHubProvider.
-        // The owner and repo information is now provided externally!
         config.RegisterProvider<GitHubProvider>(() => 
             new GitHubProvider("YOUR_USERNAME", "YOUR_REPO_NAME")
         );
-        
-        // Other providers can be added in the future...
-        // config.RegisterProvider<TwitterProvider>(() => new TwitterProvider("..."));
     });
+
+    // (Optional) Set a default token for the entire application lifecycle
+    NexusConnector.SetDefaultToken("YOUR_SECRET_TOKEN_HERE");
 
     // ... rest of your application
 }
@@ -121,6 +120,18 @@ var updatedIssue = await Connect.To<GitHubProvider>()
                                 .WithToken(githubToken)
                                 .As<IGitHubActions>()
                                 .UpdateIssue(42, title: "UPDATED - Critical Bug Fixed", state: IssueState.Closed);
+```
+
+#### Using the Default Token
+
+If you have set a default token during configuration, you can use the `.WithDefaultToken()` method to avoid passing the token on every call.
+
+```csharp
+// Assumes NexusConnector.SetDefaultToken() has been called at startup.
+var issues = await Connect.To<GitHubProvider>()
+                          .WithDefaultToken()
+                          .As<IGitHubActions>()
+                          .GetIssues();
 ```
 
 ## Contributing

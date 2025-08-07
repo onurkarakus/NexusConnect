@@ -69,6 +69,14 @@ public static class Connect
             throw new InvalidCastException($"Mevcut provider ('{_provider.GetType().Name}'), istenen eylem setini ('{typeof(TProviderActions).Name}') desteklemiyor.");
 
         }
+
+        public IActionStage WithDefaultToken()
+        {
+            var defaultToken = NexusConnector.GetDefaultToken();
+            _provider.Authenticate(defaultToken);
+
+            return this;
+        }
     }
 }
 

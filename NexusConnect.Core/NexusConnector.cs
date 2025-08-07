@@ -7,9 +7,7 @@ namespace NexusConnect.Core;
 /// </summary>
 public class NexusConnector
 {
-    /// <summary>
-    /// Stores registered provider factories mapped by their type.
-    /// </summary>
+    private static string? DefaultToken { get; set; }
     private static readonly Dictionary<Type, Func<IProvider>> ProviderFactories = new();
 
     /// <summary>
@@ -20,6 +18,24 @@ public class NexusConnector
     {
         var builder = new ConfigurationBuilder();
         configureAction(builder);
+    }
+
+    /// <summary>
+    /// Sets a default authentication token to be used for all subsequent API calls
+    /// that use the .WithDefaultToken() method.
+    /// </summary>
+    /// <param name="token">The default authentication token.</param>
+    public static void SetDefaultToken(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            throw new ArgumentException("Default token cannot be null or whitespace.", nameof(token));
+
+        DefaultToken = token;
+    }
+
+    internal static string GetDefaultToken()
+    {
+        return DefaultToken ?? throw new InvalidOperationException("A default token has not been set. Please call NexusConnector.SetDefaultToken() first.");
     }
 
     /// <summary>
