@@ -18,6 +18,11 @@
     <PackageTags>api, orchestrator, fluent, wrapper, github, twitter, automation, sdk, .net</PackageTags>
     <PackageReleaseNotes>Initial alpha release of the core framework and the fully-featured GitHub provider.</PackageReleaseNotes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+  
 </Project>
