@@ -39,4 +39,12 @@ public interface IGitHubActions
     /// <param name="state">The new state for the issue (optional).</param>
     /// <returns>The updated <see cref="Issue"/>.</returns>
     Task<Issue> UpdateIssue(int issueNumber, string? title = null, string? body = null, IssueState? state = null);
+
+    /// <summary>
+    /// Creates a new comment on a specific issue.
+    /// </summary>
+    /// <param name="issueNumber">The number of the issue to comment on.</param>
+    /// <param name="commentBody">The markdown content of the comment.</param>
+    /// <returns>A Task that represents the asynchronous operation. The task result contains the newly created <see cref="Comment"/>.</returns>
+    Task<Comment> CreateComment(int issueNumber, string commentBody);
 }

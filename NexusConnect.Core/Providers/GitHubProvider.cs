@@ -104,6 +104,32 @@ public class GitHubProvider : IProvider, IGitHubActions
         return issue ?? throw new NexusApiException("The issue data from the API could not be deserialized or was empty.");
     }
 
+    /// <inheritdoc/>
+    public async Task<Comment> CreateComment(int issueNumber, string commentBody)
+    {
+        // 1. Girdi Kontrolü
+        if (issueNumber <= 0)
+            throw new ArgumentException("Issue number must be a positive value.", nameof(issueNumber));
+        if (string.IsNullOrWhiteSpace(commentBody))
+            throw new ArgumentException("Comment body cannot be null or whitespace.", nameof(commentBody));
+
+        // 2. Request Body Oluşturma
+        // GitHub API'si yorum içeriğini 'body' adında bir alanda bekler.
+        var payload = new { body = commentBody };
+        var jsonContent = JsonSerializer.Serialize(payload);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // 3. Merkezi Metot ile İstek Gönderme
+        // API adresi: /repos/{owner}/{repo}/issues/{issueNumber}/comments
+        var response = await SendRequestAsync(HttpMethod.Post, $"issues/{issueNumber}/comments", httpContent);
+
+        // 4. Cevabı İşleme
+        var contentStream = await response.Content.ReadAsStreamAsync();
+        var createdComment = await JsonSerializer.DeserializeAsync<Comment>(contentStream);
+
+        return createdComment ?? throw new NexusApiException("GitHub created a comment but the response body was empty or invalid.");
+    }
+
     /// <summary>
     /// Sends an HTTP request to the GitHub API for the configured repository.
     /// Handles authentication and error mapping.

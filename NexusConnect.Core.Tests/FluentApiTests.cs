@@ -145,4 +145,38 @@ public class FluentApiTests
         // ASSERT
         Assert.Null(exception);
     }
+
+    [Fact]
+    public async Task GitHub_CreateComment_ShouldSucceedAndReturnComment()
+    {
+        // 1. ARRANGE (Kurulum):
+        // Yorum eklemek için önce üzerine yorum yapabileceğimiz bir issue oluşturuyoruz.
+        // Bu, testimizi bağımsız ve tekrar edilebilir kılar.
+        string issueTitle = $"Test Issue for Commenting - {DateTime.Now.Ticks}";
+        var issue = await Connect.To<GitHubProvider>()
+            .WithToken(_githubToken)
+            .As<IGitHubActions>()
+            .CreateIssue(issueTitle, "This issue is for testing comment creation.");
+
+        Assert.NotNull(issue);
+
+        // 2. ACT (Eylem):
+        // Şimdi, oluşturduğumuz bu issue'nun numarasını kullanarak yeni yorumumuzu ekliyoruz.
+        string commentText = "This is a test comment from NexusConnect.";
+        Comment? createdComment = null;
+
+        var exception = await Record.ExceptionAsync(async () =>
+        {
+            createdComment = await Connect.To<GitHubProvider>()
+                .WithToken(_githubToken)
+                .As<IGitHubActions>()
+                .CreateComment(issue.Number, commentText);
+        });
+
+        // 3. ASSERT (Doğrulama):
+        Assert.Null(exception); // Hata fırlatılmamalı.
+        Assert.NotNull(createdComment); // Dönen yorum nesnesi null olmamalı.
+        Assert.Equal(commentText, createdComment.Body); // Yorumun içeriğinin doğru olduğunu doğrula.
+        Assert.NotEmpty(createdComment.Url); // Dönen URL'nin boş olmadığını kontrol et.
+    }
 }

@@ -71,6 +71,18 @@ public static void Main(string[] args)
 
 The `GitHubProvider` allows you to interact with the GitHub API.
 
+#### Using the Default Token
+
+If you have set a default token during configuration, you can use the `.WithDefaultToken()` method to avoid passing the token on every call.
+
+```csharp
+// Assumes NexusConnector.SetDefaultToken() has been called at startup.
+var issues = await Connect.To<GitHubProvider>()
+                          .WithDefaultToken()
+                          .As<IGitHubActions>()
+                          .GetIssues();
+```
+
 #### Creating an Issue
 
 ```csharp
@@ -122,16 +134,18 @@ var updatedIssue = await Connect.To<GitHubProvider>()
                                 .UpdateIssue(42, title: "UPDATED - Critical Bug Fixed", state: IssueState.Closed);
 ```
 
-#### Using the Default Token
+#### Creating a Comment on an Issue
 
-If you have set a default token during configuration, you can use the `.WithDefaultToken()` method to avoid passing the token on every call.
+You can easily add a new comment to any existing issue using its number.
 
 ```csharp
-// Assumes NexusConnector.SetDefaultToken() has been called at startup.
-var issues = await Connect.To<GitHubProvider>()
-                          .WithDefaultToken()
-                          .As<IGitHubActions>()
-                          .GetIssues();
+// Adds a new comment to issue #42
+var createdComment = await Connect.To<GitHubProvider>()
+                                  .WithToken(githubToken)
+                                  .As<IGitHubActions>()
+                                  .CreateComment(42, "I've investigated this bug and I have a potential fix.");
+
+Console.WriteLine($"Successfully posted a new comment! URL: {createdComment.Url}");
 ```
 
 ## Contributing
