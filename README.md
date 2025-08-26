@@ -147,6 +147,36 @@ var createdComment = await Connect.To<GitHubProvider>()
 
 Console.WriteLine($"Successfully posted a new comment! URL: {createdComment.Url}");
 ```
+#### Managing Labels
+
+NexusConnect provides a full set of methods to manage labels on your issues.
+
+**List All Repository Labels**
+```csharp
+// Get all available labels for the configured repository.
+var repoLabels = await Connect.To<GitHubProvider>()
+                              .WithToken(githubToken)
+                              .As<IGitHubActions>()
+                              .GetLabelsForRepository();
+```
+
+**Add Labels to an Issue**
+```csharp
+// Add the "bug" and "documentation" labels to issue #42.
+var updatedLabels = await Connect.To<GitHubProvider>()
+                                 .WithToken(githubToken)
+                                 .As<IGitHubActions>()
+                                 .AddLabelsToIssue(42, "bug", "documentation");
+```
+        
+**Remove a Label from an Issue**
+```csharp
+// Remove the "bug" label from issue #42.
+var finalLabels = await Connect.To<GitHubProvider>()
+                               .WithToken(githubToken)
+                               .As<IGitHubActions>()
+                               .RemoveLabelFromIssue(42, "bug");
+```
 
 ## Contributing
 

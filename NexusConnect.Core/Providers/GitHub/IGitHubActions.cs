@@ -47,4 +47,26 @@ public interface IGitHubActions
     /// <param name="commentBody">The markdown content of the comment.</param>
     /// <returns>A Task that represents the asynchronous operation. The task result contains the newly created <see cref="Comment"/>.</returns>
     Task<Comment> CreateComment(int issueNumber, string commentBody);
+
+    /// <summary>
+    /// Retrieves all available labels for the configured repository.
+    /// </summary>
+    /// <returns>A collection of <see cref="Label"/> objects for the repository.</returns>
+    Task<IEnumerable<Label>> GetLabelsForRepository();
+
+    /// <summary>
+    /// Adds one or more labels to a specific issue.
+    /// </summary>
+    /// <param name="issueNumber">The number of the issue to add labels to.</param>
+    /// <param name="labelNames">An array of label names to add to the issue.</param>
+    /// <returns>The complete list of <see cref="Label"/> objects now on the issue.</returns>
+    Task<IEnumerable<Label>> AddLabelsToIssue(int issueNumber, params string[] labelNames);
+
+    /// <summary>
+    /// Removes a specific label from an issue.
+    /// </summary>
+    /// <param name="issueNumber">The number of the issue to remove a label from.</param>
+    /// <param name="labelName">The name of the label to remove.</param>
+    /// <returns>The complete list of <see cref="Label"/> objects remaining on the issue.</returns>
+    Task<IEnumerable<Label>> RemoveLabelFromIssue(int issueNumber, string labelName);
 }

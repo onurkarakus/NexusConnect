@@ -2,7 +2,7 @@
 using NexusConnect.Core.Exceptions;
 using NexusConnect.Core.Providers.GitHub;
 
-namespace NexusConnect.Core.Tests;
+namespace NexusConnect.Core.Tests.Providers.GitHub;
 
 public class ErrorHandlingTests
 {

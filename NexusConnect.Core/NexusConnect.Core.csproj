@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>NexusConnect</PackageId>
-    <Version>0.3.0-alpha</Version>
+    <Version>0.4.0-alpha</Version>
     <Authors>Onur Karakus</Authors>
     <Company>Onur Karakus</Company>
     <Description>A fluent API orchestrator for .NET to manage multiple service APIs (like GitHub, Twitter, etc.) under a single, intuitive syntax.</Description>

@@ -17,7 +17,7 @@ public class GitHubProvider : IProvider, IGitHubActions
     private static readonly HttpClient httpClient = new HttpClient();
     private readonly string _owner;
     private readonly string _repo;
-    
+
     public string Name => "GitHub";
     private string? _token;
 
@@ -209,5 +209,77 @@ public class GitHubProvider : IProvider, IGitHubActions
         var updatedIssue = await JsonSerializer.DeserializeAsync<Issue>(contentStream);
 
         return updatedIssue ?? throw new NexusApiException("GitHub updated the issue but the response body was empty or invalid.");
+    }
+
+    /// <summary>
+    /// Retrieves all labels for the configured repository.
+    /// </summary>
+    /// <returns>A collection of <see cref="Label"/> objects.</returns>
+    public async Task<IEnumerable<Label>> GetLabelsForRepository()
+    {
+        var response = await SendRequestAsync(HttpMethod.Get, "labels");
+
+        var contentStream = await response.Content.ReadAsStreamAsync();
+        var labels = await JsonSerializer.DeserializeAsync<IEnumerable<Label>>(contentStream);
+
+        return labels ?? [];
+    }
+
+    /// <summary>
+    /// Adds one or more labels to a specific issue.
+    /// </summary>
+    /// <param name="issueNumber">The number of the issue to add labels to.</param>
+    /// <param name="labelNames">An array of label names to add.</param>
+    /// <returns>A collection of <see cref="Label"/> objects that are now on the issue.</returns>
+    public async Task<IEnumerable<Label>> AddLabelsToIssue(int issueNumber, params string[] labelNames)
+    {
+        if (issueNumber <= 0)
+        {
+            throw new ArgumentException("Issue number must be a positive value.", nameof(issueNumber));
+        }
+
+        if (labelNames == null || !labelNames.Any())
+        {
+            return [];
+        }
+
+        var payload = new { labels = labelNames };
+        var jsonContent = JsonSerializer.Serialize(payload);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        var response = await SendRequestAsync(HttpMethod.Post, $"issues/{issueNumber}/labels", httpContent);
+
+        var contentStream = await response.Content.ReadAsStreamAsync();
+        var labels = await JsonSerializer.DeserializeAsync<IEnumerable<Label>>(contentStream);
+
+        return labels ?? [];
+    }
+
+    /// <summary>
+    /// Removes a label from a specific issue.
+    /// </summary>
+    /// <param name="issueNumber">The number of the issue to remove the label from.</param>
+    /// <param name="labelName">The name of the label to remove.</param>
+    /// <returns>A collection of <see cref="Label"/> objects representing the remaining labels on the issue.</returns>
+    public async Task<IEnumerable<Label>> RemoveLabelFromIssue(int issueNumber, string labelName)
+    {
+        if (issueNumber <= 0)
+        {
+            throw new ArgumentException("Issue number must be a positive value.", nameof(issueNumber));
+        }
+
+        if (string.IsNullOrWhiteSpace(labelName))
+        {
+            throw new ArgumentException("Label name cannot be null or whitespace.", nameof(labelName));
+        }
+
+        var encodedLabelName = Uri.EscapeDataString(labelName);
+
+        var response = await SendRequestAsync(HttpMethod.Delete, $"issues/{issueNumber}/labels/{encodedLabelName}");
+
+        var contentStream = await response.Content.ReadAsStreamAsync();
+        var labels = await JsonSerializer.DeserializeAsync<IEnumerable<Label>>(contentStream);
+
+        return labels ?? [];
     }
 }
