@@ -14,4 +14,7 @@ public interface IAuthenticationStage
     IActionStage WithToken(string token);
 
     IActionStage WithDefaultToken();
+
+    TProviderActions As<TProviderActions>() where TProviderActions : class;
+
 }
