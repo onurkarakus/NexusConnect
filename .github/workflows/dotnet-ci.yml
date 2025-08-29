@@ -41,8 +41,12 @@ jobs:
     - name: Run tests with code coverage
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
+        TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+        TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
       run: dotnet test NexusConnect.Core.Tests/NexusConnect.Core.Tests.csproj --configuration Release --no-build --settings coverlet.runsettings --collect "XPlat Code Coverage" --verbosity normal
-
+      
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:        
